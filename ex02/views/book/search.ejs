@@ -1,0 +1,54 @@
+<h1><%=title%></h1>
+<div class="row mb-4">
+    <div class="col-6 col-md-4">
+        <form class="input-group" name="frm" action="">
+            <input class="form-control" type="text" name="query" value="자바" placeholder="도서명">
+            <button class="btn btn-dark">검색</button>
+        </form>
+    </div>
+</div>
+<div id="div_book" class="row"></div>
+    <script id="temp_book" type="X-handlerbars-template">
+        {{#each documents}}
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="col card mx-1">
+                    <div class="card-body">
+                        <img src={{thumbnail}} alt="">
+                    </div>
+                    <div class="card-footer">
+                        <div class="ellipsis title"> {{title}} </div>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+    </script>
+
+<script>
+    let query = $(frm.query).val();
+    getData();
+    $(frm).on("submit", function(e){
+        e.preventDefault();
+        query = $(frm.query).val();
+        if(query==''){
+            alert('도서명을 입력하세요!');
+        }else {
+            getData();
+        }
+    });
+
+    function getData() {
+        $.ajax({
+            type:"get",
+            url:"https://dapi.kakao.com/v3/search/book?target=title",
+            dataType:"json",
+            data:{query:query, size:6, page:1},
+            headers:{"Authorization":"KakaoAK 35c0aa5e699cabcb9592ef08fb07d91a"},
+            success:function(data){
+                // alert("성공");
+                console.log(data);
+                const temp = Handlebars.compile($('#temp_book').html());
+                $('#div_book').html(temp(data));
+            }
+        });
+    }
+</script>
