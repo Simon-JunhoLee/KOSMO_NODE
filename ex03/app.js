@@ -23,6 +23,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/book', require('./routes/book'));
 app.use('/local', require('./routes/local'));
+app.use('/blog', require('./routes/blog'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -40,4 +41,6 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+var db = require('./db');
+db.connect();
 module.exports = app;
