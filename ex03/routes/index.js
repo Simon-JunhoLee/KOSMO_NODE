@@ -33,6 +33,7 @@ router.post('/login', function(req, res) {
             }
         }
         res.send({result});
+        console.log({result});
     });
   
 });
