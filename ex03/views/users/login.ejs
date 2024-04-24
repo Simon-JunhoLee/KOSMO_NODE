@@ -60,7 +60,7 @@
                     // 로그인 체크
                     $.ajax({
                         type:"post",
-                        url:"/login",
+                        url:"/users/login",
                         data:{uid:uid, upass:upass},
                         success:function(data){
                             console.log(data);
