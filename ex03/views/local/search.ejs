@@ -1,0 +1,94 @@
+<h1><%=title%></h1>
+<div class="row mb-4">
+    <form class="col-6" name="frm" action="">
+        <div class="input-group">
+            <input class="form-control" name="query" type="text" value="가산동" placeholder="장소명">
+            <button class="btn btn-dark">검색</button>
+        </div>
+    </form>
+</div>
+<div id="div_local"></div>
+<div class="text-center my-3">
+    <button class="btn btn-dark" id="prev">이전</button>
+    <span class="mx-3" id="page">1</span>
+    <button class="btn btn-dark" id="next">다음</button>
+</div>
+<div id="map"></div>
+<script id="temp_local" type="X-handlerbars-template">
+    <table class="table table-hover">
+        <tr class="table-dark">
+            <th>장소명</th>
+            <th>전화번호</th>
+            <th>주소</th>
+            <th>위치</th>
+        </tr>
+        {{#each documents}}
+            <tr>
+                <td>{{place_name}}</td>
+                <td>{{phone}}</td>
+                <td>{{address_name}}</td>
+                <td><button x={{x}} y={{y}} class="btn btn-dark btn-sm location">위치</button></td>
+            </tr>
+        {{/each}}
+    </table>
+</script>
+<script>
+    let query = $(frm.query).val();
+    let page = 1;
+    getData();
+    // 위치 버튼을 클릭한 경우
+    $('#div_local').on("click", ".location", function(){
+        const x = $(this).attr("x");
+        const y = $(this).attr("y");
+        alert(x + ":" + y);
+    });
+
+    $("#next").on("click", function(){
+        page++;
+        getData();
+    });
+
+    $("#prev").on("click", function(){
+        page--;
+        getData();
+    });
+
+    $(frm).on("submit", function(e){
+        e.preventDefault();
+        query = $(frm.query).val();
+        if(query==""){
+            alert("장소명을 입력하세요!");
+        }else {
+            getData();
+            page = 1;
+        }
+    });
+
+    function getData() {
+        $.ajax({
+            type:"get",
+            url:"https://dapi.kakao.com/v2/local/search/keyword.json",
+            dataType:"json",
+            data:{query:query, size:5, page:page},
+            headers:{"Authorization":"KakaoAK 35c0aa5e699cabcb9592ef08fb07d91a"},
+            success:function(data){
+                console.log(data);
+                // alert("성공!");
+                const temp = Handlebars.compile($('#temp_local').html());
+                $('#div_local').html(temp(data));
+                const last = Math.ceil(data.meta.pageable_count/5);
+                $('#page').html(`<b>${page} / ${last}`);
+                if(page==1){
+                    $('#prev').attr('hidden', true);
+                }else {
+                    $('#prev').attr('hidden', false);
+                }
+                if(data.meta.is_end){
+                    $('#next').attr('hidden', true);
+                }else {
+                    $('#next').attr('hidden', false);
+                }
+            }
+        })
+    }
+</script>
