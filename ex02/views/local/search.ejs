@@ -21,18 +21,36 @@
             <th>주소</th>
         </tr>
         {{#each documents}}
-            <tr>
+            <tr id="{{@index}}">
                 <td>{{place_name}}</td>
                 <td>{{phone}}</td>
                 <td>{{address_name}}</td>
             </tr>
+            <tfoot><%-include('modal.ejs')%></tfoot>
         {{/each}}
     </table>
 </script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f44337bd1ecad310fe2470e9360bee12&autoload=false"></script>
+<script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
 <script>
     let query = $(frm.query).val();
     let page = 1;
     getData();
+    $('#div_local').on("click", "tr", function(){
+        const id = $(this).attr('id');
+        $('#modal' + id).modal('show');
+        // 모달이 열릴 때마다 해당 모달 내의 지도를 초기화합니다.
+        let mapContainer = document.getElementById('map' + id);
+        let mapOptions = {
+            center: new kakao.maps.LatLng(33.450701, 126.570667),
+            level: 3
+        };
+        let map = new kakao.maps.Map(mapContainer, mapOptions);
+    });
+    kakao.maps.load(function() {
+        // v3가 모두 로드된 후, 이 콜백 함수가 실행됩니다.
+        let map = new kakao.maps.Map(mapContainer, mapOptions);
+    });
 
     $("#next").on("click", function(){
         page++;
