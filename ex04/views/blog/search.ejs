@@ -13,9 +13,10 @@
     <span class="mx-3" id="page">1</span>
     <button class="btn btn-dark" id="next">다음</button>
 </div>
-<script id="temp_blog" type="X-handlerbars-template">
+<script id="temp_blog" type="X-handlebars-template">
     {{#each documents}}
-        <div class="row mb-3" url="{{url}}" style="cursor:pointer;">
+        <!-- <div class="row mb-3" url="{{url}}" style="cursor:pointer;"> -->
+        <div class="row mb-3" url="{{url}}"">
             <div class="col-8">
                 <div><a href="{{url}}">{{{title}}}</a></div>
                 <div class="ellipsis3">{{{contents}}}</div>
@@ -45,11 +46,13 @@
     let page = 1;
     getData();
 
+    /*
     // row를 클릭했을 때 url 이동
     $('#div_blog').on("click", ".row", function(){
         const url = $(this).attr("url");
         location.href=url;
     });
+    */
 
     $("#next").on("click", function(){
         page++;

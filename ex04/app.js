@@ -24,6 +24,7 @@ app.use('/users', usersRouter);
 app.use('/book', require('./routes/book'));
 app.use('/local', require('./routes/local'));
 app.use('/blog', require('./routes/blog'));
+app.use('/posts', require('./routes/posts'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
