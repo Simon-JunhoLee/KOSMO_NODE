@@ -1,0 +1,53 @@
+<h1><%=title%></h1>
+<div class="row justify-content-center px-5">
+    <div class="col-8 card">
+        <form class="card-body mt-2" name="frm" method="post" action="/users/update">
+            <input name="uid" value="<%=user.uid%>" type="hidden">
+            <div class="input-group mb-2">
+                <span class="input-group-text px-5">이름</span>
+                <input class="form-control" name="uname" type="text" value="<%=user.uname%>">
+            </div>
+            <div class="input-group mb-2">
+                <span class="input-group-text px-5">전화</span>
+                <input class="form-control" name="phone" type="text" value="<%=user.phone%>">
+            </div>
+            <div class="input-group mb-2">
+                <span class="input-group-text px-5">주소</span>
+                <input class="form-control" name="address1" type="text" value="<%=user.address1%>">
+                <button class="btn btn-dark px-3" id="btn-search" type="button">검색</button>
+            </div>
+            <div>
+                <input class="form-control" name="address2" type="text" value="<%=user.address2%>" placeholder="상세주소">
+            </div>
+            <div class="text-center mt-3">
+                <button class="btn btn-dark px-3" type="submit">수정</button>
+                <button class="btn btn-secondary px-3" type="reset">취소</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    $('#btn-search').on("click", function(){
+        new daum.Postcode({
+            oncomplete:function(data){
+                console.log(data);
+                const building=data.buildingName;
+                let address="";
+                if(building!=""){
+                    address = `${data.address}(${building})`;
+                }else {
+                    address = data.address;
+                }
+                $(frm.address1).val(address);
+            }
+        }).open();
+    })
+
+    $(frm).on("submit", function(e){
+        e.preventDefault();
+        if(confirm("수정하시겠습니까?")){
+            frm.submit();
+        }
+    });
+
+</script>

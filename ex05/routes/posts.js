@@ -12,19 +12,21 @@ router.get('/list.json', function(req, res){
     let page = req.query.page;
     let size = parseInt(req.query.size);
     let start = (page-1)*size;
-    let sql = "SELECT pid, title, contents, writer, DATE_FORMAT(pdate, '%y.%m.%d. %r') AS formatted_pdate FROM posts order by pid desc limit ?, ?";
-    db.get().query(sql, [start, size], function(err, rows){
+    let query = "%" + req.query.query + "%";
+    let sql = "SELECT pid, title, contents, writer, DATE_FORMAT(pdate, '%y.%m.%d. %r') AS formatted_pdate FROM posts "
+    sql += "where title like ? or contents like ? or writer like ? order by pid desc limit ?, ?";
+    db.get().query(sql, [query, query, query, start, size], function(err, rows){
         const documents = rows;
         if(err){
             console.log("게시판 목록 : ", err);
         }else {
-            sql = "select count(*) total from posts";
-            db.get().query(sql, function(err, rows){
+            sql = "select count(*) total from posts where title like ? or contents like ? or writer like ?";
+            db.get().query(sql, [query, query, query], function(err, rows){
                 if(err){
                     console.log("총 데이터 수 : ", err);
                 }else {
-                    const total = rows[0].total;
-                    res.send({documents, total});
+                        const total = rows[0].total;
+                        res.send({documents, total});
                 }
             });
         }

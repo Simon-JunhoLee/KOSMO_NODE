@@ -2,10 +2,16 @@
 <div class="row mb-4">
     <form class="col-4" name="frm" action="">
         <div class="input-group">
-            <input class="form-control" name="query" type="text" value="" placeholder="게시글명">
+            <input class="form-control" name="query" type="text" value="" placeholder="게시글 검색">
             <button class="btn btn-dark">검색</button>
         </div>
     </form>
+    <div class="col pt-2">
+        <span id="total"></span>
+    </div>
+    <div class="col text-end" id="div-write" style="display: none;">
+        <a href="/posts/insert"><button class="btn btn-dark">글쓰기</button></a>
+    </div>
 </div>
 
 <div id="div_posts"></div>
@@ -34,10 +40,6 @@
         {{/each}}
     </table>
 </script>
-
-<div class="text-end mb-4" id="div-write" style="display: none;">
-    <a href="/posts/insert"><button class="btn btn-dark">글쓰기</button></a>
-</div>
 
 <div class="text-center my-3">
     <button class="btn btn-dark" id="prev">이전</button>
@@ -70,31 +72,33 @@
     $(frm).on("submit", function(e){
         e.preventDefault();
         query = $(frm.query).val();
-        if(query==""){
-            alert("게시글명을 입력하세요!");
-        }else {
             getData();
             page = 1;
-        }
     });
 
     function getData(){
         $.ajax({
             type:"get",
             url:"/posts/list.json",
-            data: {page:page, size:size},
+            data: {query:query, page:page, size:size},
             dataType:"json",
             success:function(data){
                 console.log(data);
                 const temp = Handlebars.compile($('#temp_posts').html());
+                const last = Math.ceil(data.total/size);
                 $('#div_posts').html(temp(data));
-                $('#page').html(`<b>${page}</b>`);
-                if(page==1){
+                $("#total").html(`총 <b>${data.total}</b> 건`);
+                $('#page').html(`<b>${page}/${last}</b>`);
+                if(page == 1){
                     $('#prev').attr('hidden', true);
                 }else {
                     $('#prev').attr('hidden', false);
                 }
-                
+                if(page == last){
+                    $('#next').attr('hidden', true);
+                }else {
+                    $('#next').attr('hidden', false);
+                }
             }
         });
     }
