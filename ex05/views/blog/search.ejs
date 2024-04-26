@@ -1,0 +1,104 @@
+<h1><%=title%></h1>
+<div class="row mb-4">
+    <form class="col-4 " name="frm" action="">
+        <div class="input-group" style="margin:0 30%">
+            <input class="form-control" name="query" type="text" value="블로그" placeholder="블로그명">
+            <button class="btn btn-dark">검색</button>
+        </div>
+    </form>
+</div>
+<div id="div_blog" style="width: 100%;margin: 0 10%;"></div>
+<div class="text-center my-3">
+    <button class="btn btn-dark" id="prev">이전</button>
+    <span class="mx-3" id="page">1</span>
+    <button class="btn btn-dark" id="next">다음</button>
+</div>
+<script id="temp_blog" type="X-handlebars-template">
+    {{#each documents}}
+        <!-- <div class="row mb-3" url="{{url}}" style="cursor:pointer;"> -->
+        <div class="row mb-3" url="{{url}}"">
+            <div class="col-8">
+                <div><a href="{{url}}">{{{title}}}</a></div>
+                <div class="ellipsis3">{{{contents}}}</div>
+                <div class="mt-2" style="font-size:10px;color:gray;">
+                    <span>{{blogname}}</span>
+                    <span class="ms-3">{{fmtDate datetime}}</span>
+                </div>
+            </div>
+            <div class="col-4">
+                <img src="{{thumbnail}}" alt="">
+            </div>
+        </div>
+    {{/each}}
+</script>
+<script>
+    Handlebars.registerHelper("fmtDate", function(date){
+        const yy = date.substring(0,4);
+        const mm = date.substring(5,7);
+        const dd = date.substring(8,10);
+        const fmtdate = `${yy}년${mm}월${dd}일`;
+        return fmtdate;
+    });
+</script>
+<script>
+    let query = $(frm.query).val();
+    const size = 3;
+    let page = 1;
+    getData();
+
+    /*
+    // row를 클릭했을 때 url 이동
+    $('#div_blog').on("click", ".row", function(){
+        const url = $(this).attr("url");
+        location.href=url;
+    });
+    */
+
+    $("#next").on("click", function(){
+        page++;
+        getData();
+    });
+
+    $("#prev").on("click", function(){
+        page--;
+        getData();
+    });
+
+    $(frm).on("submit", function(e){
+        e.preventDefault();
+        query = $(frm.query).val();
+        if(query==""){
+            alert("블로그명을 입력하세요!");
+        }else {
+            getData();
+            page = 1;
+        }
+    });
+
+    function getData(){
+        $.ajax({
+            type:"get",
+            url:"https://dapi.kakao.com/v2/search/blog",
+            headers:{"Authorization":"KakaoAK 35c0aa5e699cabcb9592ef08fb07d91a"},
+            dataType:"json",
+            data:{query:query, size:size, page:page},
+            success: function(data){
+                console.log(data);
+                const temp = Handlebars.compile($('#temp_blog').html());
+                $('#div_blog').html(temp(data));
+                const last = Math.ceil(data.meta.pageable_count/size);
+                $('#page').html(`<b>${page} / ${last}`);
+                if(page==1){
+                    $('#prev').attr('hidden', true);
+                }else {
+                    $('#prev').attr('hidden', false);
+                }
+                if(data.meta.is_end){
+                    $('#next').attr('hidden', true);
+                }else {
+                    $('#next').attr('hidden', false);
+                }
+            }
+        });
+    }
+</script>
