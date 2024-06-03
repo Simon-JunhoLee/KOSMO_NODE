@@ -67,8 +67,9 @@ router.get('/list', function(req, res){
     const uid = req.query.uid;
     let sql = "select *, date_format(regdate, '%Y-%m-%d %T') fmtDate, format(price, 0) fmtPrice, ";
     sql += "(select count(*) from likes where books.bid = likes.bid) lcnt, ";
-    sql += "(select count(*) from likes where books.bid = likes.bid and uid=?) ucnt ";
-    sql += "from books ";
+    sql += "(select count(*) from likes where books.bid = likes.bid and uid=?) ucnt,";
+    sql += "(select count(*) from review where books.bid=review.bid) rcnt";
+    sql += " from books ";
     sql += `where ${key} like '%${word}%'`;
     sql += "order by bid desc ";
     sql += "limit ?, ?;";
@@ -103,7 +104,7 @@ router.get('/read/:bid', function(req, res){
     console.log('..............', bid, uid);
     let sql ="select *,date_format(regdate,'%Y-%m-%d') fmtDate, format(price,0) fmtPrice,";
         sql+="(select count(*) from likes where books.bid=likes.bid) lcnt,";
-        sql+="(select count(*) from likes where books.bid=likes.bid and uid=?) ucnt"
+        sql+="(select count(*) from likes where books.bid=likes.bid and uid=?) ucnt";
         sql+=" from books where bid=?";
     //const sql="select * from books where bid=?";
     db.get().query(sql, [uid, bid], function(err, rows){
