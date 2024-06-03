@@ -96,18 +96,24 @@ router.post('/delete', function(req, res){
     });
 });
 
-// 도서정보 Read
+//도서정보 Read 테스트:/books/read/112?uid=green
 router.get('/read/:bid', function(req, res){
-    const bid = req.params.bid;
-    const sql = "select *, date_format(updateDate, '%Y-%m-%d %T') fmtDate from books where bid=?";
-    db.get().query(sql, [bid], function(err, rows){
-        if(err){
-            console.log('도서정보 Read 에러 : ', err);
-        }else{
-            res.send(rows[0]);
-        }
+    const bid=req.params.bid;
+    const uid=req.query.uid;
+    console.log('..............', bid, uid);
+    let sql ="select *,date_format(regdate,'%Y-%m-%d') fmtDate, format(price,0) fmtPrice,";
+        sql+="(select count(*) from likes where books.bid=likes.bid) lcnt,";
+        sql+="(select count(*) from likes where books.bid=likes.bid and uid=?) ucnt"
+        sql+=" from books where bid=?";
+    //const sql="select * from books where bid=?";
+    db.get().query(sql, [uid, bid], function(err, rows){
+      if(err){
+        console.log('도서정보 에러', err)
+      }else{
+        res.send(rows[0]);
+      }
     });
-});
+  });
 
 // 도서정보 Update
 router.post('/update', function(req, res){
@@ -141,5 +147,19 @@ router.post('/likes/insert', function(req, res){
         }
     })
 })
+
+//좋아요취소
+router.post('/likes/delete', function(req, res){
+    const uid=req.body.uid;
+    const bid=req.body.bid;
+    const sql="delete from likes where uid=? and bid=?";
+    db.get().query(sql, [uid, bid], function(err, rows){
+      if(err){
+        res.send({result:0});
+      }else{
+        res.send({result:1});
+      }
+    });
+  });
 
 module.exports = router;

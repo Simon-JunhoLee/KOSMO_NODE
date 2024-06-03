@@ -113,4 +113,12 @@ router.post('/update', function(req, res){
     });
 });
 
+router.get('/count', function(req, res){
+    const sql='select count(*) count from users';
+    db.get().query(sql, function(err, rows){
+      res.send({count:rows[0].count});
+    });
+  });
+  
+
 module.exports = router;
