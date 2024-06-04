@@ -72,7 +72,7 @@ router.get('/list', function(req, res){
     sql += " from books ";
     sql += `where ${key} like '%${word}%'`;
     sql += "order by bid desc ";
-    sql += "limit ?, ?;";
+    sql += "limit ?, ?";
     db.get().query(sql, [uid, (page-1)*size, size], function(err, rows){
         const documents = rows;
         sql = "select count(*) total from books ";
