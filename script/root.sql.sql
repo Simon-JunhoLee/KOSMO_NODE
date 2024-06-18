@@ -20,6 +20,4 @@ create database reactdb;
 create user react identified by 'pass';
 grant all privileges on reactdb.* to react@'%';
 
-create database lunchDiarydb;
-create user lunchDiary identified by 'pass';
-grant all privileges on lunchDiarydb.* to lunchDiary@'%';
+
